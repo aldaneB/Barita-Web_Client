@@ -3,16 +3,28 @@
  */
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFilteredTransactions } from "../../store/transaction-slice";
 import { format } from "date-fns";
 
+//TODO:Add total amount and total count to csv file
+//TODO:Add navigation to home route
+//TODO:Create a new transaction page
+//TODO:Redesign CSV file to include total count and amout at footer
 export default function FilterTransaction() {
   const dispatch = useDispatch();
+  var [isEmpty, setIsEmpty] = useState(false);
   const { transactions, isLoading, hasError } = useSelector(
     (state) => state.transaction
   );
+
+  /**
+   * check if transactions are empty before disabling button
+   */
+  useEffect(() => {
+    setIsEmpty(isTransactionEmpty(transactions));
+  }, [transactions]);
 
   const [filter, setFilter] = useState({
     user_id: 0,
@@ -38,6 +50,15 @@ export default function FilterTransaction() {
     }));
   };
 
+  //Convert to dollar
+  const convertToDollar = (amount) => {
+    const dollar = new Intl.NumberFormat("en-JM", {
+      style: "currency",
+      currency: "JMD",
+    });
+    return dollar.format(amount);
+  };
+
   const downloadCSV = () => {
     if (transactions.length === 0) return;
 
@@ -47,9 +68,12 @@ export default function FilterTransaction() {
       "Transaction Type",
       "Amount",
       "User ID",
+      "Total Amount",
+      "Total Count",
     ];
 
     const csvRows = [headers.join(",")];
+
     transactions.forEach((transaction) => {
       const row = [
         transaction.transaction_id,
@@ -61,6 +85,15 @@ export default function FilterTransaction() {
       csvRows.push(row.join(","));
     });
 
+    const totalAmount = transactionSum(transactions);
+    const totalCount = transactionCount(transactions);
+
+    const footerRow = ["Total", "", "", "", "", totalAmount];
+    csvRows.push(footerRow.join(","));
+
+    // Add final row for total count
+    const totalRow = ["", "", "", "", "", "", totalCount];
+    csvRows.push(totalRow.join(","));
     const csv = csvRows.join("\n");
 
     //create downloadable link
@@ -68,11 +101,11 @@ export default function FilterTransaction() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute = ("download", "filtered-transactions.csv");
+    link.download = "transactions.csv";
     link.click();
   };
 
-  const onSubmit = (e) => {
+  function onSubmit(e) {
     e.preventDefault();
     const { user_id, start_date, end_date, transaction_type } = filter;
 
@@ -87,7 +120,7 @@ export default function FilterTransaction() {
         },
       })
     );
-  };
+  }
 
   //Return the sum of all transactions
   function transactionSum(transactions) {
@@ -101,6 +134,11 @@ export default function FilterTransaction() {
   //Return the number of transactions
   function transactionCount(transactions) {
     return transactions.length;
+  }
+
+  //Check if transacion is empty
+  function isTransactionEmpty(transactions) {
+    return transactions.length === 0;
   }
 
   return (
@@ -171,9 +209,10 @@ export default function FilterTransaction() {
           <button
             className="rounded-md bg-green-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-green-700 focus:shadow-none active:bg-green-700 hover:bg-green-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
             type="button"
+            disabled={isEmpty}
             onClick={downloadCSV}
           >
-            Download CSV
+            {isEmpty ? "Download CSV" : "Download CSV"}
           </button>
         </div>
       </form>
@@ -182,6 +221,7 @@ export default function FilterTransaction() {
       {hasError && <div style={{ color: "red" }}>{hasError.message}</div>}
       {/**Transaction List */}
 
+      {/* //TODO:Add totals row */}
       {transactions && transactions.length > 0 ? (
         <div className="relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -235,14 +275,14 @@ export default function FilterTransaction() {
                     Total Transactions
                   </p>
                 </th>
-                {/* <th
+                <th
                   scope="col"
                   className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
                 >
                   <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
                     Total Amount
                   </p>
-                </th> */}
+                </th>
               </tr>
             </thead>
             <tbody className="hover:bg-slate-50">
@@ -269,7 +309,7 @@ export default function FilterTransaction() {
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
                       <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                        {transaction.amount}
+                        {convertToDollar(transaction.amount)}
                       </p>
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
@@ -303,26 +343,37 @@ export default function FilterTransaction() {
                 </tr>
               )}
             </tbody>
-            <tfoot className="border-solid">
+            <tfoot className="border-top-solid border-spacing-3 bg-neutral-100 border-teal-900  text-lg">
               <tr>
                 <td
-                  colSpan="3"
-                  className="p-4 text-left font-bold text-slate-800 border-t border-slate-300"
+                  colSpan="6"
+                  className="p-2 text-left font-bold text-slate-800 border-t border-slate-300"
                 >
                   Totals
                 </td>
                 <td
-                  colSpan="2"
-                  className="p-4 font-bold text-slate-800 border-t border-slate-300"
+                  colSpan="3"
+                  className="p-1 p-r-4 text-center font-black text-slate-800 border-t border-slate-300"
                 >
-                  {transactionSum(transactions)}
+                  {convertToDollar(transactionSum(transactions))}
                 </td>
+                {/* <td
+                  colSpan="1"
+                  className="p-4 ml font-bold text-slate-800 border-t border-slate-300"
+                >
+                  {transactionCount(transactions)}
+                </td> */}
+              </tr>
+              <tr>
+                <td colSpan="5" className=""></td>
+                {/* <td colSpan="" className=""></td> */}
                 <td
                   colSpan=""
-                  className="p-4 font-bold text-slate-800 border-t border-slate-300"
+                  className="p-3 font-black  text-center text-slate-800 "
                 >
                   {transactionCount(transactions)}
                 </td>
+                <td colSpan="5" className=""></td>
               </tr>
             </tfoot>
           </table>
