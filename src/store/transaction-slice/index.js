@@ -9,15 +9,12 @@ const initialState = {
   transactions: [],
 };
 
-//TODO:implement create transaction function
-//TODO:implement delete transaction function
 export const getTransactions = createAsyncThunk(
   "/get-transactions",
   async () => {
     try {
       const response = await apiEndpoint.get("/Transaction/get-transactions");
-      //   console.log("response" + response.data);
-      return response.data;
+      return response.data.data;
     } catch (err) {
       console.error(err);
     }
@@ -35,9 +32,9 @@ export const createTransaction = createAsyncThunk(
         "/Transaction/create-transaction",
         transaction
       );
-      return response.data;
+      return response.data.data;
     } catch (err) {
-      if (err.response.data || err.response) {
+      if (err.response.data.data || err.response) {
         return rejectWithValue(err.response.data || err.response);
       }
       return rejectWithValue(err.message);
@@ -49,13 +46,11 @@ export const createTransaction = createAsyncThunk(
  * Delete transaction by Id
  */
 export const deleteTransaction = createAsyncThunk(
-  "/delete-transaction",
+  "/transaction_id",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await apiEndpoint.delete(
-        `/Transaction/delete-transaction/${id}`
-      );
-      return response.data;
+      const response = await apiEndpoint.delete(`/Transaction/${id}`);
+      return response.data.data;
     } catch (err) {
       if (err.response.data || err.response) {
         return rejectWithValue(err.response.data || err.response);
@@ -65,6 +60,9 @@ export const deleteTransaction = createAsyncThunk(
   }
 );
 
+/**
+ * Get filtered transactions
+ */
 export const getFilteredTransactions = createAsyncThunk(
   "get-filtered-transactions",
   async ({ filter, rejectWithValue }) => {
@@ -74,7 +72,7 @@ export const getFilteredTransactions = createAsyncThunk(
         "/Transaction/get-filtered-transactions",
         filter
       );
-      return response.data;
+      return response.data.data;
     } catch (err) {
       if (err.response.data || err.response) {
         return rejectWithValue(err.response.data || err.response);
@@ -121,6 +119,20 @@ const transactionSlice = createSlice({
         (state.isLoading = false),
           (state.hasError = true),
           (state.transactions = []);
+      })
+      .addCase(deleteTransaction.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteTransaction.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.hasError = false;
+        state.transactions = state.transactions.filter(
+          (item) => item.id !== action.payload
+        );
+      })
+      .addCase(deleteTransaction.rejected, (state) => {
+        state.isLoading = false;
+        state.hasError = true;
       });
   },
 });
