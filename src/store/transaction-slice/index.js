@@ -1,7 +1,7 @@
 //Create transaction slice
 
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import apiEndpoint from "../../authorization/auth";
 
 const initialState = {
   isLoading: false,
@@ -15,9 +15,7 @@ export const getTransactions = createAsyncThunk(
   "/get-transactions",
   async () => {
     try {
-      const response = await axios.get(
-        "https://localhost:7075/api/v1/Transaction/get-transactions"
-      );
+      const response = await apiEndpoint.get("/Transaction/get-transactions");
       //   console.log("response" + response.data);
       return response.data;
     } catch (err) {
@@ -31,8 +29,8 @@ export const getFilteredTransactions = createAsyncThunk(
   async ({ filter, rejectWithValue }) => {
     // console.log("Filter" + filter);
     try {
-      const response = await axios.post(
-        "https://localhost:7075/api/v1/Transaction/get-filtered-transactions",
+      const response = await apiEndpoint.post(
+        "/Transaction/get-filtered-transactions",
         filter
       );
       return response.data;
@@ -44,6 +42,7 @@ export const getFilteredTransactions = createAsyncThunk(
     }
   }
 );
+
 const transactionSlice = createSlice({
   name: "transaction",
   initialState,
@@ -73,7 +72,6 @@ const transactionSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(getFilteredTransactions.fulfilled, (state, action) => {
-        // console.log("fullfilled action" + action);
         (state.isLoading = false),
           (state.hasError = false),
           (state.transactions = action.payload);
