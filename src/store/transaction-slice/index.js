@@ -45,6 +45,26 @@ export const createTransaction = createAsyncThunk(
   }
 );
 
+/**
+ * Delete transaction by Id
+ */
+export const deleteTransaction = createAsyncThunk(
+  "/delete-transaction",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await apiEndpoint.delete(
+        `/Transaction/delete-transaction/${id}`
+      );
+      return response.data;
+    } catch (err) {
+      if (err.response.data || err.response) {
+        return rejectWithValue(err.response.data || err.response);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const getFilteredTransactions = createAsyncThunk(
   "get-filtered-transactions",
   async ({ filter, rejectWithValue }) => {
