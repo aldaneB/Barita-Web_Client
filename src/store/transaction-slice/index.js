@@ -24,6 +24,27 @@ export const getTransactions = createAsyncThunk(
   }
 );
 
+/**
+ * Create transaction slice
+ */
+export const createTransaction = createAsyncThunk(
+  "/create-transaction",
+  async (transaction, { rejectWithValue }) => {
+    try {
+      const response = await apiEndpoint.post(
+        "/Transaction/create-transaction",
+        transaction
+      );
+      return response.data;
+    } catch (err) {
+      if (err.response.data || err.response) {
+        return rejectWithValue(err.response.data || err.response);
+      }
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 export const getFilteredTransactions = createAsyncThunk(
   "get-filtered-transactions",
   async ({ filter, rejectWithValue }) => {
