@@ -1,5 +1,6 @@
 //Create User Auth Slice
 
+//TODO:Implement checkAuth function to user auth checking
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 

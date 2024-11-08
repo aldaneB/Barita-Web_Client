@@ -7,11 +7,8 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getFilteredTransactions } from "../../store/transaction-slice";
 import { format } from "date-fns";
-
-//TODO:Add total amount and total count to csv file
+//TODO:Make mobile responsive
 //TODO:Add navigation to home route
-//TODO:Create a new transaction page
-//TODO:Redesign CSV file to include total count and amout at footer
 export default function FilterTransaction() {
   const dispatch = useDispatch();
   var [isEmpty, setIsEmpty] = useState(false);
@@ -26,6 +23,8 @@ export default function FilterTransaction() {
     setIsEmpty(isTransactionEmpty(transactions));
   }, [transactions]);
 
+  //TODO:Set user_id to current user and remove form input
+  //TODO:Create initial state variable to use instead of inserting variables directly eg initialState
   const [filter, setFilter] = useState({
     user_id: 0,
     start_date: null,

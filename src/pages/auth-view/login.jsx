@@ -16,14 +16,13 @@ const initialState = {
 };
 
 /**
- * 
+ *
  * @returns Component
  */
 export default function AuthLogin() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [FormData, setFormData] = useState(initialState);
-  console.log(FormData);
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
   //   const { isLoading } = useSelector((state) => state.auth);
@@ -39,9 +38,8 @@ export default function AuthLogin() {
 
   function onSubmit(e) {
     e.preventDefault();
-
     dispatch(loginUser(FormData)).then((data) => {
-      console.log(data);
+      // console.log(data);
       const message = data.payload.message;
       const Toast = Swal.mixin({
         toast: true,
