@@ -4,7 +4,7 @@
 import { Typography, Input, Button } from "@material-tailwind/react";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/solid"; // Import the icon
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { loginUser } from "../../store/auth-slice";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -19,7 +19,6 @@ export default function AuthLogin() {
   const [FormData, setFormData] = useState(initialState);
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisiblity = () => setPasswordShown((cur) => !cur);
-  //   const { isLoading } = useSelector((state) => state.auth);
 
   //handle form input change
   function handleInputChange(e) {
