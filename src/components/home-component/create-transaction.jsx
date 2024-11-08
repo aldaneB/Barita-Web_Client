@@ -44,6 +44,7 @@ export default function CreateTransaction() {
   function onSubmit(e) {
     e.preventDefault();
     dispatch(createTransaction(FormData)).then((data) => {
+      console.log(data);
       const message = data.payload.message;
       const Toast = Swal.mixin({
         toast: true,
@@ -56,7 +57,7 @@ export default function CreateTransaction() {
             (toast.onmouseleave = Swal.resumeTimer);
         },
       });
-      if (data.payload.success) {
+      if (data.payload) {
         Toast.fire({
           icon: "success",
           title: "Successfully Created Transaction",

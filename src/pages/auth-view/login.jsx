@@ -40,7 +40,7 @@ export default function AuthLogin() {
     e.preventDefault();
     dispatch(loginUser(FormData)).then((data) => {
       // console.log(data);
-      const message = data.payload.message;
+      // const message = data.payload.message;
       const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
@@ -52,7 +52,7 @@ export default function AuthLogin() {
             (toast.onmouseleave = Swal.resumeTimer);
         },
       });
-      if (data.payload.success) {
+      if (data.payload) {
         Toast.fire({
           icon: "success",
           title: "Login successfully",
@@ -61,7 +61,7 @@ export default function AuthLogin() {
       } else {
         Toast.fire({
           icon: "error",
-          title: message,
+          title: "Failed to login",
         });
       }
     });
@@ -85,18 +85,14 @@ export default function AuthLogin() {
                 Your Email
               </Typography>
             </label>
-            <Input
+            <input
               id="email"
-              color="gray"
-              size="lg"
               type="email"
               name="email"
               placeholder="name@mail.com"
-              className="w-full placeholder:opacity-100 focus:border-t-primary border-t-blue-gray-200"
+              className="w-full placeholder:opacity-100 px-3 py-2 border border-gray-300 rounded-md "
               onChange={handleInputChange}
-              labelProps={{
-                className: "hidden",
-              }}
+              required
             />
           </div>
           <div className="mb-6">
@@ -108,18 +104,19 @@ export default function AuthLogin() {
                 Password
               </Typography>
             </label>
-            <Input
+            <input
               size="lg"
               placeholder="********"
-              labelProps={{
-                className: "hidden",
-              }}
-              className="w-full placeholder:opacity-100 focus:border-t-primary border-t-blue-gray-200"
+              className="w-full placeholder:opacity-100 px-3 py-2 border border-gray-300 rounded-md pr-10 sm:pr-12 lg:pr-14"
               type={passwordShown ? "text" : "password"}
               name="password"
               onChange={handleInputChange}
-            ></Input>
-            <i onClick={togglePasswordVisiblity}>
+              required
+            ></input>
+            <i
+              className="absolute right transform -translate-x-7 translate-y-3 cursor-pointer"
+              onClick={togglePasswordVisiblity}
+            >
               {passwordShown ? (
                 <EyeIcon className="h-5 w-5" />
               ) : (
@@ -127,16 +124,13 @@ export default function AuthLogin() {
               )}
             </i>
           </div>
-          <Button
-            color="gray"
-            size="lg"
-            className="mt-6"
-            fullWidth
+          <button
+            className="mt-4 w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
             type="submit"
           >
-            sign in
-          </Button>
-          <div className="!mt-4 flex justify-end">
+            Sign In
+          </button>
+          {/* <div className="!mt-4 flex justify-end">
             <Typography
               as="a"
               href="#"
@@ -146,7 +140,7 @@ export default function AuthLogin() {
             >
               Forgot password
             </Typography>
-          </div>
+          </div> */}
           {/* <Button
             variant="outlined"
             size="lg"

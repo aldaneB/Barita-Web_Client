@@ -1,7 +1,12 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTransactions } from "../../store/transaction-slice";
-import { Link, Outlet } from "react-router-dom";
+import { format } from "date-fns";
+import {
+  deleteTransaction,
+  getTransactions,
+} from "../../store/transaction-slice";
+import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 //TODO:Create class for common functions
 //TODO:Set transaction type to upper case
@@ -10,7 +15,7 @@ import { Link, Outlet } from "react-router-dom";
 //TODO:Add delete transaction functionalities
 export default function TransactionTable() {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const { transactions, isLoading, hasError } = useSelector(
     (state) => state.transaction
   );
@@ -19,6 +24,43 @@ export default function TransactionTable() {
     dispatch(getTransactions());
   }, [dispatch]); //Get transactions from API
 
+  function removeTransaction(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will not be able to recover this transaction!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, remove transaction!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteTransaction(id)).then(() => {
+          Swal.fire({
+            title: "Transaction deleted!",
+            text: "Successfully deleted transaction",
+            icon: "success",
+          });
+        });
+        // .then((data) => {
+        //   console.log("payload:" + JSON.stringify(data.payload));
+        //   const message = data.payload.payload.message;
+        //   // console.log(data);
+        //   if (data.payload.payload.success) {
+        //     S
+        //   } else {
+        //     Swal.fire({
+        //       title: "Error deleting transaction!",
+        //       text: message,
+        //       icon: "error",
+        //     });
+        //     navigate("/");
+        //   }
+        // });
+      }
+    });
+  }
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -26,9 +68,19 @@ export default function TransactionTable() {
     return <div>Error</div>;
   }
 
+  //Convert to dollar
+  const convertToDollar = (amount) => {
+    const dollar = new Intl.NumberFormat("en-JM", {
+      style: "currency",
+      currency: "JMD",
+    });
+    return dollar.format(amount);
+  };
+
   return (
     <div>
       <h1 className="table-">Transaction Table</h1>
+
       <div className="flex flex-col gap-2 shrink-0 sm:flex-row mb-5 float-end">
         <Link to="/filtered">
           <button
@@ -92,7 +144,23 @@ export default function TransactionTable() {
                 className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
               >
                 <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
-                  Actions
+                  Amount
+                </p>
+              </th>
+              <th
+                scope="col"
+                className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+              >
+                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                  Date Created
+                </p>
+              </th>
+              <th
+                scope="col"
+                className="p-4 border-b border-blue-gray-100 bg-blue-gray-50"
+              >
+                <p className="block font-sans text-sm antialiased font-normal leading-none text-blue-gray-900 opacity-70">
+                  Action
                 </p>
               </th>
             </tr>
@@ -108,7 +176,10 @@ export default function TransactionTable() {
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
                     <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
-                      {transaction.transaction_date}
+                      {format(
+                        new Date(transaction.transaction_date),
+                        "yyyy-MM-dd"
+                      )}
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
@@ -117,9 +188,22 @@ export default function TransactionTable() {
                     </p>
                   </td>
                   <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                      {format(new Date(transaction.created_at), "yyyy-MM-dd")}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <p className="block font-sans text-sm antialiased font-normal leading-normal text-blue-gray-900">
+                      {convertToDollar(transaction.amount)}
+                    </p>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
                     <button
                       className="rounded-md bg-red-600 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-red-700 focus:shadow-none active:bg-red-700 hover:bg-red-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none ml-2"
                       type="button"
+                      onClick={() =>
+                        removeTransaction(transaction.transaction_id)
+                      }
                     >
                       Delete
                     </button>
