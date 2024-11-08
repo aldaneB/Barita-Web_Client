@@ -1,18 +1,13 @@
-import { useState, useEffect } from "react";
-import FilterTransaction from "./filter-transactions";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getTransactions } from "../../store/transaction-slice";
 import { Link } from "react-router-dom";
 
-const initialState = {
-  transactions: [],
-  filter: {
-    user_id: null,
-    start_date: null,
-    end_date: null,
-    type: null,
-  },
-};
+//TODO:Create class for common functions
+//TODO:Set transaction type to upper case
+//TODO:Create a function to format transaction amount
+//TODO:Create a function to format transaction date
+//TODO:Add delete and create transaction functionalities
 export default function TransactionTable() {
   const dispatch = useDispatch();
 
