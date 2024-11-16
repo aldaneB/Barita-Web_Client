@@ -82,12 +82,23 @@ export const getFilteredTransactions = createAsyncThunk(
   }
 );
 
+/**
+ *
+ * @returns Empty list of transactions
+ */
+export const clearTransactions = () => (dispatch) => {
+  dispatch({ type: "transaction/clearTransactions" });
+};
+
 const transactionSlice = createSlice({
   name: "transaction",
   initialState,
   reducers: {
     setTransaction: (state, action) => {
       state.transactions = action.payload;
+    },
+    clearTransactions: (state) => {
+      state.transactions = [];
     },
   },
   extraReducers: (builder) => {

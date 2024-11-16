@@ -3,12 +3,12 @@
  */
 
 import { Outlet } from "react-router-dom";
-import TransactionTable from "./table";
+// import TransactionTable from "./table";
 
 export default function HomeLayout() {
   return (
     <div className="container">
-      <TransactionTable />
+      {/* <TransactionTable /> */}
       <main>
         <Outlet />
       </main>

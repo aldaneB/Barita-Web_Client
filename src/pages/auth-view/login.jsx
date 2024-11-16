@@ -52,7 +52,7 @@ export default function AuthLogin() {
             (toast.onmouseleave = Swal.resumeTimer);
         },
       });
-      if (data.payload) {
+      if (data.payload.success) {
         Toast.fire({
           icon: "success",
           title: "Login successfully",
@@ -77,14 +77,7 @@ export default function AuthLogin() {
         </Typography>
         <form onSubmit={onSubmit} className="mx-auto max-w-[24rem] text-left">
           <div className="mb-6">
-            <label htmlFor="email">
-              <Typography
-                variant="small"
-                className="mb-2 block font-medium text-gray-900"
-              >
-                Your Email
-              </Typography>
-            </label>
+            <label htmlFor="email">Your Email</label>
             <input
               id="email"
               type="email"
@@ -96,14 +89,7 @@ export default function AuthLogin() {
             />
           </div>
           <div className="mb-6">
-            <label htmlFor="password">
-              <Typography
-                variant="small"
-                className="mb-2 block font-medium text-gray-900"
-              >
-                Password
-              </Typography>
-            </label>
+            <label htmlFor="password">Password</label>
             <input
               size="lg"
               placeholder="********"
@@ -130,31 +116,7 @@ export default function AuthLogin() {
           >
             Sign In
           </button>
-          {/* <div className="!mt-4 flex justify-end">
-            <Typography
-              as="a"
-              href="#"
-              color="blue-gray"
-              variant="small"
-              className="font-medium"
-            >
-              Forgot password
-            </Typography>
-          </div> */}
-          {/* <Button
-            variant="outlined"
-            size="lg"
-            className="mt-6 flex h-12 items-center justify-center gap-2"
-            fullWidth
-          >
-            <img
-              src={`https://www.material-tailwind.com/logos/logo-google.png`}
-              alt="google"
-              className="h-6 w-6"
-            />{" "}
-            sign in with google
-          </Button> */}
-          <Typography
+          {/* <Typography
             variant="small"
             color="gray"
             className="!mt-4 text-center font-normal"
@@ -163,7 +125,7 @@ export default function AuthLogin() {
             <a href="#" className="font-medium text-gray-900">
               Create account
             </a>
-          </Typography>
+          </Typography> */}
         </form>
       </div>
     </section>

@@ -3,10 +3,11 @@
 //TODO:Implement checkAuth function to user auth checking
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import apiEndpoint from "../../authorization/auth";
 
 const initialState = {
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: true,
   error: null,
 };
 
@@ -25,6 +26,22 @@ export const loginUser = createAsyncThunk(
       return response.data;
     } catch (err) {
       return rejectWithValue(err.message);
+    }
+  }
+);
+
+/**
+ * Check if user is authenticated from web api
+ */
+export const checkAuth = createAsyncThunk(
+  "/check-auth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiEndpoint.get("Auth/check-auth");
+      console.log(response.data);
+      return response.data;
+    } catch (ex) {
+      return rejectWithValue(ex.message);
     }
   }
 );
@@ -50,6 +67,17 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.isAuthenticated = false;
         state.error = action.payload.error;
+      })
+      .addCase(checkAuth.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isAuthenticated = action.payload.success;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.isLoading = false;
+        state.isAuthenticated = false;
       });
   },
 });
